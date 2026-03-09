@@ -4,6 +4,7 @@ plugins {
 
 android {
     compileSdk 33
+    namespace 'com.lanfiletransfer'
 
     defaultConfig {
         applicationId "com.lanfiletransfer"
@@ -34,6 +35,10 @@ android {
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/NOTICE.txt'
     }
+
+    lint {
+        disable 'DuplicatePlatformClasses'
+    }
 }
 
 dependencies {
@@ -44,8 +49,10 @@ dependencies {
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     
-    // Socket.IO
-    implementation 'io.socket:socket.io-client:2.1.0'
+    // Socket.IO (排除json依赖避免与Android冲突)
+    implementation('io.socket:socket.io-client:2.1.0') {
+        exclude group: 'org.json', module: 'json'
+    }
     
     // 二维码
     implementation 'com.google.zxing:core:3.5.2'
