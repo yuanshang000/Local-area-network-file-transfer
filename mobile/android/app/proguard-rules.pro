@@ -1,50 +1,21 @@
 # Add project specific ProGuard rules here.
-# By default, the flags in this file are appended to flags specified
-# in /usr/local/lib/android/sdk/tools/proguard/proguard-android.txt
-# You can edit the include path and order by changing the proguardFiles
-# directive in build.gradle.
+# You can control the set of applied configuration files using the
+# proguardFiles setting in build.gradle.
 #
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
-# React Native
+# If your project uses WebView with JS, uncomment the following
+# and specify the fully qualified class name to the JavaScript interface
+# class:
+#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
+#   public *;
+#}
 
-# Keep line numbers for easier stack traces
--keepattributes SourceFile,LineNumberTable
+# Uncomment this to preserve the line number information for
+# debugging stack traces.
+#-keepattributes SourceFile,LineNumberTable
 
-# Keep React Native native methods
--keepclassmembers class * { public <methods>; }
--keepclassmembers class * { native <methods>; }
-
-# Keep interfaces
--keep,allowobfuscation interface * { *; }
-
-# Keep React Native classes
--keep class com.facebook.react.** { *; }
--keep class com.facebook.hermes.** { *; }
-
-# Remove logging in release
--assumenosideeffects class android.util.Log {
-    public static *** d(...);
-    public static *** v(...);
-    public static *** i(...);
-}
-
-# Remove React Native debugging
--assumenosideeffects class com.facebook.react.bridge.** {
-    public static *** isDebug(...);
-}
-
-# OkHttp
--dontwarn okhttp3.**
--dontwarn okio.**
-
-# Gson
--keepattributes Signature
--keepattributes *Annotation*
--dontwarn sun.misc.**
--keep class com.google.gson.** { *; }
--keep class * implements com.google.gson.TypeAdapter
--keep class * implements com.google.gson.TypeAdapterFactory
--keep class * implements com.google.gson.JsonSerializer
--keep class * implements com.google.gson.JsonDeserializer
+# If you keep the line number information, uncomment this to
+# hide the original source file name.
+#-renamesourcefileattribute SourceFile
