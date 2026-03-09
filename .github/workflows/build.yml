@@ -30,12 +30,10 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: desktop/package-lock.json
       
     - name: 📦 Install desktop dependencies
       working-directory: ./desktop
-      run: npm ci
+      run: npm install
       
     - name: 🏗️ Build Windows EXE
       working-directory: ./desktop
@@ -63,8 +61,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: mobile/package-lock.json
       
     - name: ☕ Setup Java
       uses: actions/setup-java@v4
@@ -75,7 +71,7 @@ jobs:
       
     - name: 📦 Install mobile dependencies
       working-directory: ./mobile
-      run: npm ci
+      run: npm install
       
     - name: 🤖 Setup Android SDK
       uses: android-actions/setup-android@v3
