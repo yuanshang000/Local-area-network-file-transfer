@@ -321,6 +321,9 @@ function setupBluetoothIPC() {
     });
 }
 
+// 别名
+const BluetoothManager = WindowsBluetoothManager;
+
 module.exports = {
     BluetoothManager,
     WindowsBluetoothManager,

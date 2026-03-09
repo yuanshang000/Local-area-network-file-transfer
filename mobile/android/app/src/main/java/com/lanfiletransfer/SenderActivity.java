@@ -249,10 +249,10 @@ public class SenderActivity extends AppCompatActivity implements SocketManager.S
         // 启动蓝牙扫描
         Toast.makeText(this, "正在搜索附近设备...", Toast.LENGTH_SHORT).show();
         
-        com.lanfiletransfer.network.BluetoothManager btManager = 
-            new com.lanfiletransfer.network.BluetoothManager(this);
+        com.lanfiletransfer.network.BluetoothHelper btManager = 
+            new com.lanfiletransfer.network.BluetoothHelper(this);
         
-        btManager.setDiscoveryListener(new com.lanfiletransfer.network.BluetoothManager.DeviceDiscoveryListener() {
+        btManager.setDiscoveryListener(new com.lanfiletransfer.network.BluetoothHelper.DeviceDiscoveryListener() {
             @Override
             public void onDeviceFound(String code, String deviceName, String hotspotInfo) {
                 runOnUiThread(() -> {

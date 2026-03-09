@@ -3,7 +3,6 @@ package com.lanfiletransfer.network;
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.AdvertiseCallback;
@@ -26,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class BluetoothManager {
+public class BluetoothHelper {
 
     private static final String TAG = "BluetoothManager";
     private static final UUID SERVICE_UUID = UUID.fromString("0000FFF0-0000-1000-8000-00805F9B34FB");
@@ -46,10 +45,10 @@ public class BluetoothManager {
         void onScanFailed(int errorCode);
     }
 
-    public BluetoothManager(Context context) {
+    public BluetoothHelper(Context context) {
         this.context = context;
         
-        BluetoothManager bluetoothManager = (BluetoothManager) 
+        android.bluetooth.BluetoothManager bluetoothManager = (android.bluetooth.BluetoothManager) 
             context.getSystemService(Context.BLUETOOTH_SERVICE);
         
         if (bluetoothManager != null) {

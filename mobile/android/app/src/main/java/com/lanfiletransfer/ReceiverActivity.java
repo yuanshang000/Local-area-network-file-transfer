@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.lanfiletransfer.network.BluetoothManager;
+import com.lanfiletransfer.network.BluetoothHelper;
 import com.lanfiletransfer.network.HotspotManager;
 import com.lanfiletransfer.network.SocketManager;
 import com.lanfiletransfer.utils.CodeGenerator;
@@ -45,7 +45,7 @@ public class ReceiverActivity extends AppCompatActivity implements SocketManager
     // Managers
     private HotspotManager hotspotManager;
     private SocketManager socketManager;
-    private BluetoothManager bluetoothManager;
+    private BluetoothHelper bluetoothManager;
 
     // State
     private String connectionCode;
@@ -211,7 +211,7 @@ public class ReceiverActivity extends AppCompatActivity implements SocketManager
      * 启动蓝牙广播
      */
     private void startBluetoothAdvertising() {
-        bluetoothManager = new BluetoothManager(this);
+        bluetoothManager = new BluetoothHelper(this);
         
         if (bluetoothManager.isBluetoothAvailable()) {
             boolean success = bluetoothManager.startAdvertising(

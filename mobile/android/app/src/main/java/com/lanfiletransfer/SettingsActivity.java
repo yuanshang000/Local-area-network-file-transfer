@@ -29,7 +29,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void initViews() {
         downloadPathText = findViewById(R.id.downloadPathText);
-        browseButton = findViewById(R.id/browseButton);
+        browseButton = findViewById(R.id.browseButton);
         resetButton = findViewById(R.id.resetButton);
 
         browseButton.setOnClickListener(v -> {
