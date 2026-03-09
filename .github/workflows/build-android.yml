@@ -24,7 +24,6 @@ permissions:
 
 env:
   JAVA_VERSION: '17'
-  GRADLE_VERSION: '8.0'
 
 jobs:
   build-android:
@@ -40,22 +39,21 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: ${{ env.JAVA_VERSION }}
-        cache: 'gradle'
       
     - name: 🤖 Setup Android SDK
       uses: android-actions/setup-android@v3
       
-    - name: 🔐 Initialize Gradle Wrapper
-      working-directory: ./mobile/android
-      run: |
-        chmod +x gradlew
-        if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
-          curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v${{ env.GRADLE_VERSION }}/gradle/wrapper/gradle-wrapper.jar
-        fi
+    - name: 🔐 Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: '8.0'
       
     - name: 🏗️ Build Android APK
       working-directory: ./mobile/android
-      run: ./gradlew assembleRelease --stacktrace --no-daemon
+      run: |
+        chmod +x gradlew
+        gradle wrapper --gradle-version 8.0
+        ./gradlew assembleRelease --stacktrace --no-daemon
       
     - name: 📋 List APK files
       working-directory: ./mobile/android
@@ -117,8 +115,8 @@ jobs:
           - **虚拟WiFi热点** - 无需外部网络即可传输
           - **二维码连接** - 扫码即可配对
           - **4位数字码** - 简单输入快速连接
-          - **蓝牙发��** - 自动发现附近设备
-          - **高速传输** - 通过WiFi Direct传输文件
+          - **蓝牙发现** - 自动发现附近设备
+          - **高速传输** - 通过WiFi传输文件
           - **实时进度** - 显示传输进度
           
           ### 📥 安装说明

@@ -38,8 +38,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: desktop/package-lock.json
       
     - name: 📦 Install desktop dependencies
       working-directory: ./desktop
@@ -115,13 +113,14 @@ jobs:
           - **虚拟WiFi热点** - 创建热点供手机连接
           - **二维码连接** - 扫码即可配对
           - **4位数字码** - 简单输入快速连接
+          - **蓝牙发现** - 自动发现附近设备
           - **高速传输** - 通过WiFi传输文件
           - **实时进度** - 显示传输进度
           - **系统托盘** - 最小化到托盘运行
           
           ### 📥 安装说明
           1. 下载 `.exe` 安装程序或便携版
-          2. 运行安装程序（需要管理员权限创建热点）
+          2. 运行安装程序（需要管理员权限创���热点）
           
           ### 🚀 使用方法
           
@@ -133,7 +132,7 @@ jobs:
           **发送方：**
           1. 打开应用
           2. 连接到接收方的WiFi热点
-          3. 输入匹配码或扫描二维码
+          3. 输入匹配码 / 扫描二维码 / 蓝牙发现
           4. 选择文件并开始传输
           
           ### ⚙️ 技术栈
