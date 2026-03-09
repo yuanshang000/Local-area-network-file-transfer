@@ -8,15 +8,8 @@ react {
     codegenDir = file("../../node_modules/react-native-codegen")
     cliFile = file("../../node_modules/react-native/cli.js")
     
-    /* Variants */
-    debuggableVariants = ["liteDebug", "prodDebug"]
-    
     /* Bundling */
-    bundleCommand = "ram-bundle"
-    bundleConfig = file(../../bundle-config.json)
-    bundleAssetName = "MyApplication.android.bundle"
-    entryFile = file("../../js/MyApplication.android.js")
-    extraPackagerArgs = []
+    bundleAssetName = "index.android.bundle"
     
     /* Hermes Commands */
     hermesCommand = "../../node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc"

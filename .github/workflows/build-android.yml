@@ -19,6 +19,9 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: write
+
 env:
   NODE_VERSION: '18'
   JAVA_VERSION: '17'
