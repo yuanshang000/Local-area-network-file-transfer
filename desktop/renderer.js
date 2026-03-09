@@ -282,9 +282,23 @@ async function updateHotspotDetails() {
         document.getElementById('hotspot-ssid').textContent = currentSettings.hotspotName || 'LanTransfer';
         document.getElementById('hotspot-password').textContent = currentSettings.hotspotPassword || '12345678';
         document.getElementById('local-ip').textContent = localIP;
+        
+        // 生成并显示连接码
+        if (!myConnectCode) {
+            myConnectCode = generateConnectCode();
+        }
+        const codeElement = document.getElementById('hotspot-code');
+        if (codeElement) {
+            codeElement.textContent = myConnectCode;
+        }
     } catch (error) {
         console.error('获取热点详情失败:', error);
     }
+}
+
+// 生成4位数字连接码
+function generateConnectCode() {
+    return String(1000 + Math.floor(Math.random() * 9000));
 }
 
 // 更新设备列表
@@ -559,14 +573,14 @@ function showRoleModal() {
 function handleRoleSelection(role) {
     closeAllModals();
 
-    if (role === 'sender') {
-        // 发送方需要创建热点
+    if (role === 'receiver') {
+        // 接收方创建虚拟WiFi热点
         if (!isHotspotCreated) {
             createHotspot();
         }
     } else {
-        // 接收方需要连接热点
-        alert('请连接到对方的Wifi热点');
+        // 发送方需要连接到接收方的热点
+        alert('请连接到接收方的虚拟WiFi热点:\n\n名称: ' + (currentSettings.hotspotName || 'LanTransfer') + '\n密码: ' + (currentSettings.hotspotPassword || '12345678') + '\n\n连接后使用二维码或数字码连接');
     }
 }
 

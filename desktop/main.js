@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage } = require('electr
 const path = require('path');
 const { spawn } = require('child_process');
 const Store = require('electron-store');
+const server = require('./server');
 
 const store = new Store();
 
@@ -73,7 +74,15 @@ function createTray() {
 }
 
 // 应用程序就绪
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+    // 启动 Socket.IO 服务器
+    try {
+        await server.startServer();
+        console.log('服务器启动成功');
+    } catch (err) {
+        console.error('服务器启动失败:', err);
+    }
+    
     createWindow();
     createTray();
 

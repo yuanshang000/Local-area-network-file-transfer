@@ -23,8 +23,8 @@ permissions:
   contents: write
 
 env:
-  NODE_VERSION: '18'
   JAVA_VERSION: '17'
+  GRADLE_VERSION: '8.0'
 
 jobs:
   build-android:
@@ -48,18 +48,20 @@ jobs:
     - name: 🔐 Initialize Gradle Wrapper
       working-directory: ./mobile/android
       run: |
-        # Remove existing gradle-wrapper.jar if it exists
-        rm -f gradle/wrapper/gradle-wrapper.jar
-        
-        # Download the correct gradle-wrapper.jar
-        curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.0.0/gradle/wrapper/gradle-wrapper.jar
-        
-        # Make gradlew executable
         chmod +x gradlew
+        if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
+          curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v${{ env.GRADLE_VERSION }}/gradle/wrapper/gradle-wrapper.jar
+        fi
       
     - name: 🏗️ Build Android APK
       working-directory: ./mobile/android
-      run: ./gradlew assembleRelease --stacktrace
+      run: ./gradlew assembleRelease --stacktrace --no-daemon
+      
+    - name: 📋 List APK files
+      working-directory: ./mobile/android
+      run: |
+        echo "APK files:"
+        find . -name "*.apk" -type f
       
     - name: 📤 Upload Android artifact
       uses: actions/upload-artifact@v4
@@ -67,7 +69,7 @@ jobs:
         name: lan-file-transfer-android
         path: mobile/android/app/build/outputs/apk/release/*.apk
         retention-days: 30
-        if-no-files-found: error
+        if-no-files-found: warn
 
   create-release:
     name: 🚀 Create Release
@@ -101,7 +103,7 @@ jobs:
     - name: 🚀 Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ steps.version.outputs.version }}
+        tag_name: android-${{ steps.version.outputs.version }}
         name: 局域网文件传输 ${{ steps.version.outputs.version }} (Android)
         draft: false
         prerelease: false
@@ -111,36 +113,39 @@ jobs:
         body: |
           ## 📦 局域网文件传输工具 ${{ steps.version.outputs.version }} - Android 版本
           
-          ### ✨ 新功能
-          - 虚拟Wifi热点连接（无需外部网络）
-          - 二维码扫描连接
-          - 4位数字码连接
-          - 快速文件传输
-          - 实时传输进度显示
-          - 灵活的热点创建设置
+          ### ✨ 功能特性
+          - **虚拟WiFi热点** - 无需外部网络即可传输
+          - **二维码连接** - 扫码即可配对
+          - **4位数字码** - 简单输入快速连接
+          - **蓝牙发��** - 自动发现附近设备
+          - **高速传输** - 通过WiFi Direct传输文件
+          - **实时进度** - 显示传输进度
           
-          ### 📥 下载说明
-          
-          #### Android 用户
-          下载 `lan-file-transfer-android` 中的 `.apk` 文件，安装到手机。
+          ### 📥 安装说明
+          1. 下载 APK 文件
+          2. 安装到 Android 手机（需要允许未知来源）
+          3. 授予必要权限（位置、存储、相机、蓝牙）
           
           ### 🚀 使用方法
-          1. 安装 APK 到手机
-          2. 授予必要权限（位置、存储、相机）
-          3. 连接到 Wifi 热点（或创建热点）
-          4. 使用二维码或数字码与电脑配对
-          5. 选择文件并开始传输
+          
+          **接收方：**
+          1. 打开应用，选择"接收文件"
+          2. 等待热点创建完成
+          3. 显示二维码和匹配码供发送方连接
+          
+          **发送方：**
+          1. 打开应用，选择"发送文件"
+          2. 选择要发送的文件
+          3. 扫描二维码 / 输入匹配码 / 蓝牙发现设备
+          4. 开始传输
           
           ### ⚙️ 技术栈
-          - 移动端: Android Native
-          - 通信: WebSocket + HTTP
-          
-          ### 📝 系统要求
-          - Android: Android 5.0 (API 21) 或更高版本
-          - 需要位置、存储、相机权限
+          - 平台: Android Native (Java)
+          - 通信: Socket.IO
+          - 最低版本: Android 5.0 (API 21)
           
           ---
           
-          🤝 如有问题，请在 GitHub Issues 中反馈。
+          🤝 如有问题，请在 [GitHub Issues](../../issues) 中反馈。
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

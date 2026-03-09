@@ -2,28 +2,34 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.lanfiletransfer">
 
-    <!-- 网络权限 -->
+    <!-- Network permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     
-    <!-- 热点和位置权限 -->
+    <!-- Hotspot and location permissions -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     
-    <!-- 文件读写权限 -->
+    <!-- File permissions -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     
-    <!-- Android 13+ 媒体权限 -->
+    <!-- Android 13+ media permissions -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     
-    <!-- 相机权限（二维码扫描） -->
+    <!-- Camera permission -->
     <uses-permission android:name="android.permission.CAMERA" />
+    
+    <!-- Bluetooth permissions -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
     <application
         android:label="@string/app_name"
@@ -37,14 +43,27 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustResize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity
+            android:name=".SenderActivity"
+            android:label="发送文件"
+            android:parentActivityName=".MainActivity" />
+        
+        <activity
+            android:name=".ReceiverActivity"
+            android:label="接收文件"
+            android:parentActivityName=".MainActivity" />
+        
+        <activity
+            android:name=".SettingsActivity"
+            android:label="设置"
+            android:parentActivityName=".MainActivity" />
         
     </application>
 

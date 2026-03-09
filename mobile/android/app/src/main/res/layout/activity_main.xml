@@ -2,165 +2,82 @@
 <androidx.constraintlayout.widget.ConstraintLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:padding="32dp">
 
-    <!-- 标题栏 -->
     <TextView
         android:id="@+id/titleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="局域网文件传输"
-        android:textSize="24sp"
+        android:textSize="28sp"
         android:textStyle="bold"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="60dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- 设备名称 -->
     <TextView
-        android:id="@+id/deviceNameLabel"
+        android:id="@+id/subtitleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="设备名称："
+        android:text="请选择您的身份"
         android:textSize="16sp"
-        android:layout_marginTop="24dp"
+        android:textColor="#666666"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@id/titleText"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="32dp"/>
-
-    <EditText
-        android:id="@+id/deviceNameEditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="我的设备"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="32dp"
-        app:layout_constraintTop_toTopOf="@id/deviceNameLabel"
-        app:layout_constraintStart_toEndOf="@id/deviceNameLabel"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- 状态显示 -->
-    <TextView
-        android:id="@+id/statusText"
+    <Button
+        android:id="@+id/senderButton"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="未连接"
-        android:textSize="14sp"
-        android:textColor="#666666"
-        android:layout_marginTop="24dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/deviceNameEditText"
+        android:layout_height="120dp"
+        android:text="发送文件"
+        android:textSize="20sp"
+        android:drawableTop="@android:drawable/ic_menu_send"
+        android:drawablePadding="8dp"
+        android:layout_marginTop="60dp"
+        app:layout_constraintTop_toBottomOf="@id/subtitleText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- 按钮区域 -->
-    <LinearLayout
-        android:id="@+id/buttonLayout"
+    <Button
+        android:id="@+id/receiverButton"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="32dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        app:layout_constraintTop_toBottomOf="@id/statusText"
+        android:layout_height="120dp"
+        android:text="接收文件"
+        android:textSize="20sp"
+        android:drawableTop="@android:drawable/ic_menu_save"
+        android:drawablePadding="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/senderButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- 创建热点按钮 -->
-        <Button
-            android:id="@+id/createHotspotButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="创建热点"
-            android:textSize="16sp"
-            android:padding="16dp"/>
-
-        <!-- 连接热点按钮 -->
-        <Button
-            android:id="@+id/connectHotspotButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="连接热点"
-            android:textSize="16sp"
-            android:padding="16dp"
-            android:layout_marginTop="16dp"/>
-
-        <!-- 二维码连接按钮 -->
-        <Button
-            android:id="@+id/qrCodeButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="二维码连接"
-            android:textSize="16sp"
-            android:padding="16dp"
-            android:layout_marginTop="16dp"/>
-
-        <!-- 数字码连接按钮 -->
-        <Button
-            android:id="@+id/codeConnectButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="数字码连接"
-            android:textSize="16sp"
-            android:padding="16dp"
-            android:layout_marginTop="16dp"/>
-
-        <!-- 选择文件按钮 -->
-        <Button
-            android:id="@+id/selectFileButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="选择文件"
-            android:textSize="16sp"
-            android:padding="16dp"
-            android:layout_marginTop="16dp"
-            android:enabled="false"/>
-
-    </LinearLayout>
-
-    <!-- 连接码显示 -->
-    <TextView
-        android:id="@+id/connectionCodeText"
+    <Button
+        android:id="@+id/settingsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="48sp"
-        android:textStyle="bold"
-        android:textColor="#2196F3"
+        android:text="设置"
+        android:textSize="14sp"
+        android:drawableStart="@android:drawable/ic_menu_manage"
+        android:drawablePadding="4dp"
         android:layout_marginTop="32dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/buttonLayout"
+        app:layout_constraintTop_toBottomOf="@id/receiverButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- 二维码显示 -->
-    <ImageView
-        android:id="@+id/qrCodeImageView"
-        android:layout_width="256dp"
-        android:layout_height="256dp"
-        android:layout_marginTop="32dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/buttonLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <!-- 进度显示 -->
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="0dp"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/buttonLayout"
+        android:text="接收方将创建虚拟WiFi热点（无需网络）"
+        android:textSize="12sp"
+        android:textColor="#999999"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/settingsButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 

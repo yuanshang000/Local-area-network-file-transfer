@@ -61,16 +61,17 @@
                         </div>
                     </section>
 
-                    <!-- 热点状态 -->
+                    <!-- 虚拟WiFi热点状态 -->
                     <section class="hotspot-status">
-                        <h2>热点状态</h2>
+                        <h2>虚拟WiFi热点状态</h2>
+                        <p class="section-hint">虚拟WiFi热点无需网络连接，设备连接后可直接传输文件</p>
                         <div class="hotspot-info">
                             <div class="hotspot-status-text">
                                 <span id="hotspot-status">未创建</span>
                             </div>
                             <div class="hotspot-actions">
-                                <button id="btn-create-hotspot" class="btn btn-primary">创建热点</button>
-                                <button id="btn-stop-hotspot" class="btn btn-danger" disabled>停止热点</button>
+                                <button id="btn-create-hotspot" class="btn btn-primary">创建虚拟热点</button>
+                                <button id="btn-stop-hotspot" class="btn btn-danger" disabled>停止虚拟热点</button>
                             </div>
                         </div>
                         <div id="hotspot-details" class="hotspot-details hidden">
@@ -85,6 +86,10 @@
                             <div class="detail-item">
                                 <span class="detail-label">本机IP:</span>
                                 <span id="local-ip" class="detail-value">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">连接码:</span>
+                                <span id="hotspot-code" class="detail-value code-highlight">----</span>
                             </div>
                         </div>
                     </section>
@@ -275,12 +280,14 @@
                     <div class="role-option" data-role="sender">
                         <div class="role-icon">📤</div>
                         <div class="role-title">发送方</div>
-                        <div class="role-desc">创建热点，发送文件</div>
+                        <div class="role-desc">连接热点，发送文件</div>
+                        <div class="role-hint">需先连接接收方的虚拟WiFi热点</div>
                     </div>
                     <div class="role-option" data-role="receiver">
                         <div class="role-icon">📥</div>
                         <div class="role-title">接收方</div>
-                        <div class="role-desc">连接热点，接收文件</div>
+                        <div class="role-desc">创建虚拟WiFi热点，接收文件</div>
+                        <div class="role-hint">自动创建热点，无需网络连接</div>
                     </div>
                 </div>
             </div>
