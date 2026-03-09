@@ -58,6 +58,11 @@
                                 <div class="method-title">数字码连接</div>
                                 <div class="method-desc">输入4位数字码连接</div>
                             </div>
+                            <div class="connect-method" id="method-bluetooth">
+                                <div class="method-icon">📶</div>
+                                <div class="method-title">蓝牙发现</div>
+                                <div class="method-desc">自动发现附近设备</div>
+                            </div>
                         </div>
                     </section>
 
@@ -289,6 +294,42 @@
                         <div class="role-desc">创建虚拟WiFi热点，接收文件</div>
                         <div class="role-hint">自动创建热点，无需网络连接</div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框：蓝牙发现 -->
+    <div id="modal-bluetooth" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>蓝牙发现设备</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="bluetooth-scanning" class="bluetooth-scanning">
+                    <div class="scanning-icon">🔍</div>
+                    <p>正在搜索附近的设备...</p>
+                    <p class="scanning-hint">请确保接收方已开启蓝牙并创建了热点</p>
+                </div>
+                <div id="bluetooth-devices" class="bluetooth-devices">
+                    <p class="devices-title">发现的设备：</p>
+                    <div id="bluetooth-device-list" class="bluetooth-device-list">
+                        <!-- 设备列表将通过JS动态添加 -->
+                    </div>
+                </div>
+                <div id="bluetooth-no-results" class="bluetooth-no-results hidden">
+                    <p>未发现附近设备</p>
+                    <p class="hint">请确保：</p>
+                    <ul>
+                        <li>接收方已开启蓝牙</li>
+                        <li>接收方已创建热点</li>
+                        <li>两台设备距离足够近</li>
+                    </ul>
+                </div>
+                <div class="modal-actions">
+                    <button id="btn-rescan-bluetooth" class="btn btn-primary">重新扫描</button>
+                    <button id="btn-cancel-bluetooth" class="btn btn-secondary">取消</button>
                 </div>
             </div>
         </div>

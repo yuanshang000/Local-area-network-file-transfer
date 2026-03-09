@@ -37,6 +37,10 @@ function initUI() {
         showCodeModal();
     });
 
+    document.getElementById('method-bluetooth').addEventListener('click', () => {
+        showBluetoothModal();
+    });
+
     // 热点操作
     document.getElementById('btn-create-hotspot').addEventListener('click', createHotspot);
     document.getElementById('btn-stop-hotspot').addEventListener('click', stopHotspot);
@@ -216,6 +220,9 @@ async function createHotspot() {
             isHotspotCreated = true;
             updateHotspotStatus(true);
             await updateHotspotDetails();
+            
+            // 启动蓝牙广播匹配码
+            await startBluetoothAdvertising();
         }
     } catch (error) {
         console.error('创建热点失败:', error);
@@ -231,6 +238,9 @@ async function stopHotspot() {
         if (result.success) {
             isHotspotCreated = false;
             updateHotspotStatus(false);
+            
+            // 停止蓝牙广播
+            await stopBluetoothAdvertising();
         }
     } catch (error) {
         console.error('停止热点失败:', error);
@@ -688,6 +698,205 @@ function formatFileSize(bytes) {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
 }
+
+// ==================== 蓝牙发现功能 ====================
+
+let bluetoothDevices = [];
+let isBluetoothScanning = false;
+
+/**
+ * 显示蓝牙发现模态框
+ */
+async function showBluetoothModal() {
+    const modal = document.getElementById('modal-bluetooth');
+    modal.classList.add('active');
+    
+    // 重置UI
+    document.getElementById('bluetooth-scanning').classList.remove('hidden');
+    document.getElementById('bluetooth-devices').classList.add('hidden');
+    document.getElementById('bluetooth-no-results').classList.add('hidden');
+    document.getElementById('bluetooth-device-list').innerHTML = '';
+    
+    // 开始扫描
+    await startBluetoothScan();
+}
+
+/**
+ * 开始蓝牙扫描
+ */
+async function startBluetoothScan() {
+    if (isBluetoothScanning) return;
+    
+    isBluetoothScanning = true;
+    bluetoothDevices = [];
+    
+    console.log('开始蓝牙扫描...');
+    
+    try {
+        const result = await ipcRenderer.invoke('bluetooth-start-scan', 15000);
+        
+        isBluetoothScanning = false;
+        
+        if (result.success) {
+            bluetoothDevices = result.devices || [];
+            console.log('发现设备:', bluetoothDevices);
+            
+            // 更新UI
+            updateBluetoothDeviceList();
+        } else {
+            console.error('蓝牙扫描失败:', result.error);
+            showBluetoothNoResults('扫描失败: ' + result.error);
+        }
+    } catch (error) {
+        isBluetoothScanning = false;
+        console.error('蓝牙扫描错误:', error);
+        showBluetoothNoResults('扫描出错');
+    }
+}
+
+/**
+ * 更新蓝牙设备列表
+ */
+function updateBluetoothDeviceList() {
+    const scanningDiv = document.getElementById('bluetooth-scanning');
+    const devicesDiv = document.getElementById('bluetooth-devices');
+    const noResultsDiv = document.getElementById('bluetooth-no-results');
+    const listDiv = document.getElementById('bluetooth-device-list');
+    
+    scanningDiv.classList.add('hidden');
+    
+    if (bluetoothDevices.length === 0) {
+        noResultsDiv.classList.remove('hidden');
+        devicesDiv.classList.add('hidden');
+        return;
+    }
+    
+    devicesDiv.classList.remove('hidden');
+    noResultsDiv.classList.add('hidden');
+    
+    // 渲染设备列表
+    listDiv.innerHTML = bluetoothDevices.map(device => `
+        <div class="bluetooth-device" data-address="${device.address}" data-code="${device.code || ''}">
+            <div class="device-info">
+                <div class="device-name">${device.name || '未知设备'}</div>
+                <div class="device-code">匹配码: ${device.code || '未知'}</div>
+            </div>
+            <button class="btn btn-primary btn-connect-bluetooth">连接</button>
+        </div>
+    `).join('');
+    
+    // 添加连接按钮事件
+    listDiv.querySelectorAll('.btn-connect-bluetooth').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const deviceDiv = e.target.closest('.bluetooth-device');
+            const code = deviceDiv.dataset.code;
+            connectViaBluetooth(code);
+        });
+    });
+}
+
+/**
+ * 显示蓝牙无结果
+ */
+function showBluetoothNoResults(message) {
+    document.getElementById('bluetooth-scanning').classList.add('hidden');
+    document.getElementById('bluetooth-devices').classList.add('hidden');
+    
+    const noResultsDiv = document.getElementById('bluetooth-no-results');
+    noResultsDiv.classList.remove('hidden');
+    noResultsDiv.querySelector('p:first-child').textContent = message;
+}
+
+/**
+ * 通过蓝牙连接
+ */
+async function connectViaBluetooth(code) {
+    if (!code || code.length !== 4) {
+        alert('无效的匹配码');
+        return;
+    }
+    
+    closeAllModals();
+    
+    // 显示连接提示
+    alert(`即将连接到匹配码: ${code}\n\n请确保已连接到接收方的WiFi热点:\n名称: LAN-Transfer\n密码: 12345678`);
+    
+    // 使用匹配码连接
+    const ip = '192.168.43.1'; // 热点默认IP
+    socket.emit('connect-with-code', { targetCode: code });
+    
+    // 更新连接状态
+    updateConnectionStatus(true);
+}
+
+/**
+ * 重新扫描蓝牙
+ */
+async function rescanBluetooth() {
+    document.getElementById('bluetooth-scanning').classList.remove('hidden');
+    document.getElementById('bluetooth-devices').classList.add('hidden');
+    document.getElementById('bluetooth-no-results').classList.add('hidden');
+    
+    await startBluetoothScan();
+}
+
+/**
+ * 启动蓝牙广播（接收方使用）
+ */
+async function startBluetoothAdvertising() {
+    if (!myConnectCode) {
+        myConnectCode = generateConnectCode();
+    }
+    
+    const ssid = currentSettings.hotspotName || 'LanTransfer';
+    const password = currentSettings.hotspotPassword || '12345678';
+    
+    try {
+        const result = await ipcRenderer.invoke('bluetooth-start-advertising', {
+            code: myConnectCode,
+            ssid: ssid,
+            password: password
+        });
+        
+        if (result.success) {
+            console.log('蓝牙广播已启动:', myConnectCode);
+        } else {
+            console.warn('蓝牙广播启动失败:', result.error);
+        }
+    } catch (error) {
+        console.error('启动蓝牙广播失败:', error);
+    }
+}
+
+/**
+ * 停止蓝牙广播
+ */
+async function stopBluetoothAdvertising() {
+    try {
+        await ipcRenderer.invoke('bluetooth-stop-advertising');
+        console.log('蓝牙广播已停止');
+    } catch (error) {
+        console.error('停止蓝牙广播失败:', error);
+    }
+}
+
+/**
+ * 初始化蓝牙相关事件
+ */
+function initBluetoothEvents() {
+    // 重新扫描按钮
+    document.getElementById('btn-rescan-bluetooth').addEventListener('click', rescanBluetooth);
+    
+    // 取消按钮
+    document.getElementById('btn-cancel-bluetooth').addEventListener('click', () => {
+        closeAllModals();
+    });
+}
+
+// 在DOMContentLoaded后初始化蓝牙事件
+document.addEventListener('DOMContentLoaded', () => {
+    initBluetoothEvents();
+});
 
 // 暴露全局函数
 window.removeFile = removeFile;

@@ -1,8 +1,9 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage } = require('electron');
 const path = require('path');
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 const Store = require('electron-store');
 const server = require('./server');
+const { setupBluetoothIPC } = require('./bluetooth');
 
 const store = new Store();
 
@@ -82,6 +83,9 @@ app.whenReady().then(async () => {
     } catch (err) {
         console.error('服务器启动失败:', err);
     }
+    
+    // 设置蓝牙 IPC
+    setupBluetoothIPC();
     
     createWindow();
     createTray();
