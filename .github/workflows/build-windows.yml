@@ -1,0 +1,130 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'desktop/**'
+      - '.github/workflows/build-windows.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'desktop/**'
+      - '.github/workflows/build-windows.yml'
+  workflow_dispatch:
+    inputs:
+      create_release:
+        description: '创建 GitHub Release'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  build-windows:
+    name: 🖥️ Build Windows EXE
+    runs-on: windows-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+      
+    - name: 📦 Install desktop dependencies
+      working-directory: ./desktop
+      run: npm install
+      
+    - name: 🏗️ Build Windows EXE
+      working-directory: ./desktop
+      run: npm run build:win
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+    - name: 📤 Upload Windows artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: lan-file-transfer-windows
+        path: desktop/dist/*.exe
+        retention-days: 30
+        if-no-files-found: error
+
+  create-release:
+    name: 🚀 Create Release
+    needs: build-windows
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && inputs.create_release == true)
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📥 Download Windows artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: lan-file-transfer-windows
+        path: ./artifacts/windows
+      
+    - name: 📝 Get version
+      id: version
+      run: |
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          VERSION="v$(date +%Y%m%d-%H%M%S)"
+        else
+          VERSION="v${{ github.run_number }}"
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Generated version: $VERSION"
+      
+    - name: 🚀 Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.version.outputs.version }}
+        name: 局域网文件传输 ${{ steps.version.outputs.version }} (Windows)
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+        files: |
+          ./artifacts/windows/*.exe
+        body: |
+          ## 📦 局域网文件传输工具 ${{ steps.version.outputs.version }} - Windows 版本
+          
+          ### ✨ 新功能
+          - 虚拟Wifi热点连接（无需外部网络）
+          - 二维码扫描连接
+          - 4位数字码连接
+          - 快速文件传输
+          - 实时传输进度显示
+          - 灵活的热点创建设置
+          
+          ### 📥 下载说明
+          
+          #### Windows 用户
+          下载 `lan-file-transfer-windows` 中的 `.exe` 文件，直接运行即可。
+          
+          ### 🚀 使用方法
+          1. 安装 Windows 应用
+          2. 创建 Wifi 热点（或连接到现有热点）
+          3. 使用二维码或数字码与手机配对
+          4. 选择文件并开始传输
+          
+          ### ⚙️ 技术栈
+          - 桌面端: Electron + Node.js
+          - 通信: WebSocket + HTTP
+          
+          ### 📝 系统要求
+          - Windows: Windows 10 或更高版本
+          - 需要管理员权限创建热点
+          
+          ---
+          
+          🤝 如有问题，请在 GitHub Issues 中反馈。
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
