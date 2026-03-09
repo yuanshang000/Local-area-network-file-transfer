@@ -71,7 +71,7 @@ jobs:
       
     - name: 📦 Install mobile dependencies
       working-directory: ./mobile
-      run: npm install
+      run: npm install --legacy-peer-deps
       
     - name: 🤖 Setup Android SDK
       uses: android-actions/setup-android@v3
