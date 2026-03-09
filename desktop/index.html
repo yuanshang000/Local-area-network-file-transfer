@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局域网文件传输</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">📡</div>
+                <div class="logo-text">文件传输</div>
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="nav-item active" data-page="home">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-text">首页</span>
+                </div>
+                <div class="nav-item" data-page="transfer">
+                    <span class="nav-icon">📤</span>
+                    <span class="nav-text">文件传输</span>
+                </div>
+                <div class="nav-item" data-page="settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-text">设置</span>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 首页 -->
+            <div id="page-home" class="page active">
+                <header class="page-header">
+                    <h1>欢迎使用局域网文件传输</h1>
+                    <div class="connection-status">
+                        <span id="status-dot" class="status-dot offline"></span>
+                        <span id="status-text">未连接</span>
+                    </div>
+                </header>
+
+                <div class="home-content">
+                    <!-- 快速连接 -->
+                    <section class="quick-connect">
+                        <h2>快速连接</h2>
+                        <div class="connect-methods">
+                            <div class="connect-method" id="method-qrcode">
+                                <div class="method-icon">📱</div>
+                                <div class="method-title">二维码连接</div>
+                                <div class="method-desc">扫描二维码快速连接</div>
+                            </div>
+                            <div class="connect-method" id="method-code">
+                                <div class="method-icon">🔢</div>
+                                <div class="method-title">数字码连接</div>
+                                <div class="method-desc">输入4位数字码连接</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 热点状态 -->
+                    <section class="hotspot-status">
+                        <h2>热点状态</h2>
+                        <div class="hotspot-info">
+                            <div class="hotspot-status-text">
+                                <span id="hotspot-status">未创建</span>
+                            </div>
+                            <div class="hotspot-actions">
+                                <button id="btn-create-hotspot" class="btn btn-primary">创建热点</button>
+                                <button id="btn-stop-hotspot" class="btn btn-danger" disabled>停止热点</button>
+                            </div>
+                        </div>
+                        <div id="hotspot-details" class="hotspot-details hidden">
+                            <div class="detail-item">
+                                <span class="detail-label">热点名称:</span>
+                                <span id="hotspot-ssid" class="detail-value">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">热点密码:</span>
+                                <span id="hotspot-password" class="detail-value">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">本机IP:</span>
+                                <span id="local-ip" class="detail-value">-</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 已连接设备 -->
+                    <section class="connected-devices">
+                        <h2>已连接设备</h2>
+                        <div id="device-list" class="device-list">
+                            <div class="empty-state">
+                                <p>暂无连接设备</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- 文件传输页面 -->
+            <div id="page-transfer" class="page">
+                <header class="page-header">
+                    <h1>文件传输</h1>
+                </header>
+
+                <div class="transfer-content">
+                    <!-- 发送文件 -->
+                    <section class="send-files">
+                        <h2>发送文件</h2>
+                        <div class="file-drop-zone" id="drop-zone">
+                            <div class="drop-icon">📁</div>
+                            <p>拖拽文件到此处或点击选择</p>
+                            <input type="file" id="file-input" multiple>
+                        </div>
+                        <div id="selected-files" class="selected-files"></div>
+                        <div class="send-actions">
+                            <select id="target-device" class="device-select" disabled>
+                                <option value="">选择接收设备</option>
+                            </select>
+                            <button id="btn-send" class="btn btn-primary" disabled>发送文件</button>
+                        </div>
+                    </section>
+
+                    <!-- 传输进度 -->
+                    <section class="transfer-progress">
+                        <h2>传输进度</h2>
+                        <div id="transfer-list" class="transfer-list">
+                            <div class="empty-state">
+                                <p>暂无传输任务</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 接收文件 -->
+                    <section class="received-files">
+                        <h2>接收的文件</h2>
+                        <div id="received-list" class="received-list">
+                            <div class="empty-state">
+                                <p>暂无接收文件</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- 设置页面 -->
+            <div id="page-settings" class="page">
+                <header class="page-header">
+                    <h1>设置</h1>
+                </header>
+
+                <div class="settings-content">
+                    <section class="settings-section">
+                        <h2>热点设置</h2>
+                        <div class="setting-item">
+                            <label class="setting-label">
+                                <input type="checkbox" id="setting-fixed-sender">
+                                <span>固定为发送方（自动创建热点）</span>
+                            </label>
+                            <p class="setting-desc">启用后，启动时自动创建Wifi热点</p>
+                        </div>
+                        <div class="setting-item">
+                            <label class="setting-label">热点名称</label>
+                            <input type="text" id="setting-hotspot-name" class="setting-input" maxlength="32">
+                        </div>
+                        <div class="setting-item">
+                            <label class="setting-label">热点密码</label>
+                            <input type="password" id="setting-hotspot-password" class="setting-input" maxlength="63">
+                            <p class="setting-desc">密码长度至少8个字符</p>
+                        </div>
+                        <div class="setting-item">
+                            <label class="setting-label">
+                                <input type="checkbox" id="setting-auto-create">
+                                <span>连接时自动创建热点</span>
+                            </label>
+                            <p class="setting-desc">未连接时自动创建热点供其他设备连接</p>
+                        </div>
+                    </section>
+
+                    <section class="settings-section">
+                        <h2>设备设置</h2>
+                        <div class="setting-item">
+                            <label class="setting-label">设备名称</label>
+                            <input type="text" id="setting-device-name" class="setting-input" maxlength="20">
+                        </div>
+                    </section>
+
+                    <section class="settings-section">
+                        <h2>传输设置</h2>
+                        <div class="setting-item">
+                            <label class="setting-label">传输端口</label>
+                            <input type="number" id="setting-port" class="setting-input" value="3000">
+                        </div>
+                        <div class="setting-item">
+                            <label class="setting-label">保存位置</label>
+                            <div class="path-input">
+                                <input type="text" id="setting-save-path" class="setting-input" readonly>
+                                <button id="btn-browse-path" class="btn btn-secondary">浏览</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="settings-actions">
+                        <button id="btn-save-settings" class="btn btn-primary">保存设置</button>
+                        <button id="btn-reset-settings" class="btn btn-secondary">重置默认</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 模态框：二维码连接 -->
+    <div id="modal-qrcode" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>二维码连接</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="qrcode-container">
+                    <div id="qrcode-display"></div>
+                </div>
+                <p class="qrcode-hint">请使用手机扫描二维码进行连接</p>
+                <div class="connect-info">
+                    <div class="info-item">
+                        <span class="info-label">连接码:</span>
+                        <span id="connect-code" class="info-value">----</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">IP地址:</span>
+                        <span id="connect-ip" class="info-value">--.--.--.--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框：数字码连接 -->
+    <div id="modal-code" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>数字码连接</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="code-display">
+                    <div id="my-code" class="code-value">----</div>
+                    <p class="code-hint">您的连接码，请告知对方</p>
+                </div>
+                <div class="code-input">
+                    <label>输入对方连接码:</label>
+                    <input type="text" id="target-code" class="code-input-field" maxlength="4" placeholder="输入4位数字">
+                </div>
+                <div class="modal-actions">
+                    <button id="btn-connect-code" class="btn btn-primary">连接</button>
+                    <button id="btn-refresh-code" class="btn btn-secondary">刷新连接码</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框：选择设备角色 -->
+    <div id="modal-role" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>选择设备角色</h3>
+            </div>
+            <div class="modal-body">
+                <p>请选择当前设备在网络中的角色：</p>
+                <div class="role-options">
+                    <div class="role-option" data-role="sender">
+                        <div class="role-icon">📤</div>
+                        <div class="role-title">发送方</div>
+                        <div class="role-desc">创建热点，发送文件</div>
+                    </div>
+                    <div class="role-option" data-role="receiver">
+                        <div class="role-icon">📥</div>
+                        <div class="role-title">接收方</div>
+                        <div class="role-desc">连接热点，接收文件</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

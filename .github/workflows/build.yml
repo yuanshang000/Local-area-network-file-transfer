@@ -1,0 +1,153 @@
+name: Build Desktop and Mobile Apps
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    name: Build Windows EXE
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: desktop/package-lock.json
+      
+    - name: Install desktop dependencies
+      working-directory: ./desktop
+      run: npm ci
+      
+    - name: Build Windows EXE
+      working-directory: ./desktop
+      run: npm run build:win
+      
+    - name: Upload Windows artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: lan-file-transfer-windows
+        path: desktop/dist/*.exe
+        retention-days: 30
+
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: mobile/package-lock.json
+      
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        cache: 'gradle'
+      
+    - name: Install mobile dependencies
+      working-directory: ./mobile
+      run: npm ci
+      
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+      
+    - name: Grant execute permission for gradlew
+      working-directory: ./mobile/android
+      run: chmod +x gradlew
+      
+    - name: Build Android APK
+      working-directory: ./mobile/android
+      run: ./gradlew assembleRelease --stacktrace
+      
+    - name: Sign APK
+      working-directory: ./mobile/android
+      env:
+        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      run: |
+        if [ -n "$KEYSTORE_PASSWORD" ]; then
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 \
+            -keystore ${{ secrets.KEYSTORE_BASE64 }} \
+            -storepass $KEYSTORE_PASSWORD \
+            -keypass $KEY_PASSWORD \
+            app/build/outputs/apk/release/app-release-unsigned.apk \
+            $KEY_ALIAS
+        fi
+      
+    - name: Upload Android artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: lan-file-transfer-android
+        path: mobile/android/app/build/outputs/apk/release/*.apk
+        retention-days: 30
+
+  create-release:
+    name: Create Release
+    needs: [build-windows, build-android]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Download Windows artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: lan-file-transfer-windows
+        path: ./artifacts/windows
+      
+    - name: Download Android artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: lan-file-transfer-android
+        path: ./artifacts/android
+      
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ github.run_number }}
+        name: Release v${{ github.run_number }}
+        draft: false
+        prerelease: false
+        files: |
+          ./artifacts/windows/*.exe
+          ./artifacts/android/*.apk
+        body: |
+          ## 局域网文件传输工具 - Release v${{ github.run_number }}
+          
+          ### 下载链接
+          - Windows: 下载 `.exe` 文件
+          - Android: 下载 `.apk` 文件
+          
+          ### 功能特性
+          - 虚拟Wifi热点连接
+          - 二维码扫描连接
+          - 4位数字码连接
+          - 快速文件传输
+          - 实时传输进度
+          
+          ### 使用说明
+          1. 安装对应平台的应用
+          2. 确保两台设备在同一Wifi网络下
+          3. 使用二维码或数字码进行连接
+          4. 开始文件传输
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
